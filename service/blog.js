@@ -67,7 +67,7 @@ const getBlogComments = async (blogId) => {
         content: comment.content,
         avatar: comment.avatar,
         createTime: comment.create_time,
-        isAdminComment: comment.is_admin_comment,
+        isAdminComment: comment.is_admin_comment ? true : false,
         blog: { id: comment.blog_id },
         parentComment: comment.parent_comment_id
           ? { id: comment.parent_comment_id }
