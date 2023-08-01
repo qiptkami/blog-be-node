@@ -1,16 +1,22 @@
 const { executeQuery } = require('../mapper/mysql');
 const {
-  blog_total,
+  blog_list_total,
   blog_list,
   blog_tag,
   blog_detail,
   blog_comments,
+  delete_blog,
+  delete_blog_tag,
 } = require('../mapper/sql/blog');
 
 const getBlogList = async (page = 1, size = 5, title, tagId) => {
-  const total = await executeQuery(blog_total());
-  const blogs = await executeQuery(blog_list(size, size * (page - 1)));
-  const value = await Promise.all(
+  const total = await executeQuery(
+    blog_list_total(size, size * (page - 1), title, tagId)
+  );
+  const blogs = await executeQuery(
+    blog_list(size, size * (page - 1), title, tagId)
+  );
+  let value = await Promise.all(
     blogs.map(async (blog) => {
       const tags = await executeQuery(blog_tag(blog.id));
       return {
@@ -27,7 +33,7 @@ const getBlogList = async (page = 1, size = 5, title, tagId) => {
     })
   );
   return {
-    value,
+    value: value,
     total: total[0].total,
     page: Number(page),
     size: Number(size),
@@ -46,6 +52,7 @@ const getBlogDetail = async (blogId) => {
         title: b.title,
         content: b.content,
         firstPicture: b.first_picture,
+        description: b.description,
         createTime: b.create_time,
         updateTime: b.update_time,
         tags: tags.map((tag) => {
@@ -77,4 +84,14 @@ const getBlogComments = async (blogId) => {
   };
 };
 
-module.exports = { getBlogList, getBlogDetail, getBlogComments };
+const deleteBlog = async (blogId) => {
+  try {
+    await executeQuery(delete_blog(blogId));
+    await executeQuery(delete_blog_tag(blogId));
+  } catch (err) {
+    return -1;
+  }
+  return 1;
+};
+
+module.exports = { getBlogList, getBlogDetail, getBlogComments, deleteBlog };
