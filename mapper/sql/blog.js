@@ -38,7 +38,14 @@ const blog_comments = (
 ) => `SELECT id, nickname, content, avatar, email, create_time, blog_id, parent_comment_id, is_admin_comment
 FROM t_comment where blog_id = ${bid} ORDER BY UNIX_TIMESTAMP(create_time) ASC`;
 
+const update_blog = (blog) =>
+  `update t_blog set content = '${blog.content}', first_picture = '${blog.firstPicture}',
+title = '${blog.title}', update_time = NOW(), description = '${blog.description}' where id = ${blog.id};`;
+
 const delete_blog = (bid) => `delete from t_blog where id = ${bid};`;
+
+const insert_blog_tag = (bid, tid) =>
+  `insert into t_tag_blog(blog_id, tag_id) values(${bid}, ${tid})`;
 
 const delete_blog_tag = (bid) =>
   `delete from t_tag_blog where blog_id = ${bid};`;
@@ -49,6 +56,8 @@ module.exports = {
   blog_tag,
   blog_detail,
   blog_comments,
+  update_blog,
+  insert_blog_tag,
   delete_blog,
   delete_blog_tag,
 };

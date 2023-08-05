@@ -4,6 +4,16 @@ const app = express();
 const port = 8001;
 const hostIP = '127.0.0.1';
 
+const {
+  getBlogList,
+  getBlogDetail,
+  getBlogComments,
+  editBlog,
+  deleteBlog,
+} = require('./service/blog');
+const { getTagList } = require('./service/tag');
+const { login } = require('./service/login');
+
 app.use((req, res, next) => {
   // 允许来自所有来源的跨域请求
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,22 +35,13 @@ app.use((req, res, next) => {
   }
 });
 
-const {
-  getBlogList,
-  getBlogDetail,
-  getBlogComments,
-  deleteBlog,
-} = require('./service/blog');
-const { getTagList } = require('./service/tag');
-const { login } = require('./service/login');
-
 app.get('/blog/pagination', async (req, res) => {
-  const queryParams = req.query;
+  const query = req.query;
   const blogList = await getBlogList(
-    queryParams.page,
-    queryParams.size,
-    queryParams.title,
-    queryParams.tagId
+    query.page,
+    query.size,
+    query.title,
+    query.tagId
   );
   res.statusCode = 200;
   res.end(JSON.stringify(blogList));
@@ -62,24 +63,38 @@ app.get('/comments/:id', async (req, res) => {
   res.end(JSON.stringify(comments));
 });
 
-app.post('/admin/login', (req, res) => {
+app.post('/login', (req, res) => {
   let body = '';
   req.on('data', (chunk) => {
     //会在数据流可用时触发多次。这是因为 HTTP 请求的数据通常以数据块（chunks）的形式进行传输，而不是一次性地传输所有数据
-    body += JSON.parse(chunk.toString());
+    body += chunk;
   });
   req.on('end', async () => {
     //为了处理完整的请求数据，需要将这些数据块收集起来，并在req.on('end', ...)事件中对它们进行处理。end事件表示请求的所有数据已经传输完毕。
-    const userInfo = await login(body.username, body.password);
+    const data = JSON.parse(body);
+    const userInfo = await login(data.username, data.password);
     // 进行相应的处理
     res.statusCode = 200;
     res.end(JSON.stringify(userInfo));
   });
 });
 
-app.delete('blog/:id', (req, res) => {
+app.delete('/blog/:id', (req, res) => {
   const id = req.params.id;
   res.end(JSON.stringify(deleteBlog(id)));
+});
+
+app.put('/blog/edit', (req, res) => {
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
+  req.on('end', async () => {
+    const data = JSON.parse(body);
+    editBlog(data);
+    res.statusCode = 200;
+    res.end(JSON.stringify('userInfo'));
+  });
 });
 
 app.use((req, res, next) => {

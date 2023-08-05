@@ -5,6 +5,8 @@ const {
   blog_tag,
   blog_detail,
   blog_comments,
+  update_blog,
+  insert_blog_tag,
   delete_blog,
   delete_blog_tag,
 } = require('../mapper/sql/blog');
@@ -84,6 +86,20 @@ const getBlogComments = async (blogId) => {
   };
 };
 
+const editBlog = async (blog) => {
+  await executeQuery(update_blog(blog));
+  //处理tag 一对多  两种方式 1. 删除原先的 直接新增 2. 新增的和原先的比较一下
+  await updateBlogTag(blog.id, blog.tags);
+  return 1;
+};
+
+const updateBlogTag = async (blogId, tags) => {
+  await executeQuery(delete_blog_tag(blogId));
+  await Promise.all(
+    tags.map(async (tag) => await executeQuery(insert_blog_tag(blogId, tag.id)))
+  );
+};
+
 const deleteBlog = async (blogId) => {
   try {
     await executeQuery(delete_blog(blogId));
@@ -94,4 +110,10 @@ const deleteBlog = async (blogId) => {
   return 1;
 };
 
-module.exports = { getBlogList, getBlogDetail, getBlogComments, deleteBlog };
+module.exports = {
+  getBlogList,
+  getBlogDetail,
+  getBlogComments,
+  editBlog,
+  deleteBlog,
+};
