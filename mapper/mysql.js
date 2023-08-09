@@ -1,12 +1,5 @@
 const mysql = require('mysql');
-
-const dataBaseConfig = {
-  host: '101.43.240.27', // 数据库主机名
-  port: 3306,
-  user: 'root', // 数据库用户名
-  password: 'qikami', // 数据库密码
-  database: 'blog', // 数据库名
-};
+const dataBaseConfig = require('./config');
 
 const executeQuery = (sql) => {
   return new Promise((resolve, reject) => {

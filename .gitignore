@@ -39,3 +39,5 @@ build
 dist
 /.scannerwork
 run.sh
+
+/mapper/config.js
