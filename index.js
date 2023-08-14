@@ -48,53 +48,89 @@ app.get('/blog/pagination', async (req, res) => {
 });
 
 app.get('/blog/:id', async (req, res) => {
-  const id = req.params.id;
-  res.end(JSON.stringify(await getBlogDetail(id)));
+  try {
+    const id = req.params.id;
+    res.end(JSON.stringify(await getBlogDetail(id)));
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.get('/tags', async (req, res) => {
-  const tags = await getTagList();
-  res.end(JSON.stringify(tags));
+  try {
+    const tags = await getTagList();
+    res.end(JSON.stringify(tags));
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.get('/comments/:id', async (req, res) => {
-  const id = req.params.id;
-  const comments = await getBlogComments(id);
-  res.end(JSON.stringify(comments));
+  try {
+    const id = req.params.id;
+    const comments = await getBlogComments(id);
+    res.end(JSON.stringify(comments));
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.post('/login', (req, res) => {
-  let body = '';
-  req.on('data', (chunk) => {
-    //会在数据流可用时触发多次。这是因为 HTTP 请求的数据通常以数据块（chunks）的形式进行传输，而不是一次性地传输所有数据
-    body += chunk;
-  });
-  req.on('end', async () => {
-    //为了处理完整的请求数据，需要将这些数据块收集起来，并在req.on('end', ...)事件中对它们进行处理。end事件表示请求的所有数据已经传输完毕。
-    const data = JSON.parse(body);
-    const userInfo = await login(data.username, data.password);
-    // 进行相应的处理
-    res.statusCode = 200;
-    res.end(JSON.stringify(userInfo));
-  });
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      //会在数据流可用时触发多次。这是因为 HTTP 请求的数据通常以数据块（chunks）的形式进行传输，而不是一次性地传输所有数据
+      body += chunk;
+    });
+    req.on('end', async () => {
+      //为了处理完整的请求数据，需要将这些数据块收集起来，并在req.on('end', ...)事件中对它们进行处理。end事件表示请求的所有数据已经传输完毕。
+      const data = JSON.parse(body);
+      const userInfo = await login(data.username, data.password);
+      // 进行相应的处理
+      res.statusCode = 200;
+      res.end(JSON.stringify(userInfo));
+    });
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.delete('/blog/:id', (req, res) => {
-  const id = req.params.id;
-  res.end(JSON.stringify(deleteBlog(id)));
+  try {
+    const id = req.params.id;
+    res.end(JSON.stringify(deleteBlog(id)));
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.put('/blog/edit', (req, res) => {
-  let body = '';
-  req.on('data', (chunk) => {
-    body += chunk;
-  });
-  req.on('end', async () => {
-    const data = JSON.parse(body);
-    editBlog(data);
-    res.statusCode = 200;
-    res.end(JSON.stringify('userInfo'));
-  });
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      const data = JSON.parse(body);
+      editBlog(data);
+      res.statusCode = 200;
+      res.end(JSON.stringify('userInfo'));
+    });
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
 });
 
 app.use((req, res, next) => {
