@@ -10,6 +10,7 @@ const {
   getBlogComments,
   editBlog,
   deleteBlog,
+  addBlog,
 } = require('./service/blog');
 const { getTagList } = require('./service/tag');
 const { login } = require('./service/login');
@@ -114,7 +115,7 @@ app.delete('/blog/:id', (req, res) => {
   }
 });
 
-app.put('/blog/edit', (req, res) => {
+app.put('/blog', (req, res) => {
   try {
     let body = '';
     req.on('data', (chunk) => {
@@ -124,7 +125,26 @@ app.put('/blog/edit', (req, res) => {
       const data = JSON.parse(body);
       editBlog(data);
       res.statusCode = 200;
-      res.end(JSON.stringify('userInfo'));
+      res.end(JSON.stringify('EDIT SUCCESS'));
+    });
+  } catch (error) {
+    console.error('Error in /login:', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.post('/blog', (req, res) => {
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      const data = JSON.parse(body);
+      addBlog(data);
+      res.statusCode = 200;
+      res.end(JSON.stringify('ADD SUCCESS'));
     });
   } catch (error) {
     console.error('Error in /login:', error);

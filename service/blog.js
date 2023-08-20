@@ -9,6 +9,7 @@ const {
   insert_blog_tag,
   delete_blog,
   delete_blog_tag,
+  insert_blog,
 } = require('../mapper/sql/blog');
 
 const getBlogList = async (page = 1, size = 5, title, tagId) => {
@@ -110,10 +111,27 @@ const deleteBlog = async (blogId) => {
   return 1;
 };
 
+const addBlog = async (blog) => {
+  try {
+    const newBlog = await executeQuery(insert_blog(blog));
+    const blogId = newBlog.insertId;
+    const tags = blog.tags;
+    await Promise.all(
+      tags.map(
+        async (tag) => await executeQuery(insert_blog_tag(blogId, tag.id))
+      )
+    );
+  } catch (err) {
+    return -1;
+  }
+  return 1;
+};
+
 module.exports = {
   getBlogList,
   getBlogDetail,
   getBlogComments,
   editBlog,
   deleteBlog,
+  addBlog,
 };
