@@ -52,7 +52,7 @@ const delete_blog_tag = (bid) =>
 
 const insert_blog = (blog) =>
   `insert into t_blog(content, first_picture, title, user_id, description, update_time, create_time) 
-values('${blog.content}', '${blog.firstPicture}', '${blog.title}', ${blog.user.uid}, '${blog.description}', NOW(), NOW());`;
+values('${blog.content}', '${blog.firstPicture}', '${blog.title}', ${blog.user.id}, '${blog.description}', NOW(), NOW());`;
 
 module.exports = {
   blog_list,

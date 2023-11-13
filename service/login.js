@@ -17,14 +17,12 @@ const login = async (username, password) => {
     const token = generateToken(u.id);
     return {
       value: {
+        id: u.id,
+        username: u.username,
+        email: u.email,
+        avatar: u.avatar,
+        sign: u.sign,
         token,
-        user: {
-          id: u.id,
-          username: u.username,
-          email: u.email,
-          avatar: u.avatar,
-          sign: u.sign,
-        },
       },
     };
   } else {

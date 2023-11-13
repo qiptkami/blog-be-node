@@ -49,6 +49,9 @@ const getBlogDetail = async (blogId) => {
     executeQuery(blog_tag(blogId)),
   ]).then(([blog, tags]) => {
     const b = blog[0];
+    if (!b) {
+      return {};
+    }
     return {
       value: {
         id: b.id,
