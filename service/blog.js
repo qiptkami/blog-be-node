@@ -13,9 +13,7 @@ const {
 } = require('../mapper/sql/blog');
 
 const getBlogList = async (page = 1, size = 5, title, tagId) => {
-  const total = await executeQuery(
-    blog_list_total(size, size * (page - 1), title, tagId)
-  );
+  const total = await executeQuery(blog_list_total(title, tagId));
   const blogs = await executeQuery(
     blog_list(size, size * (page - 1), title, tagId)
   );

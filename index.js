@@ -12,7 +12,14 @@ const {
   deleteBlog,
   addBlog,
 } = require('./service/blog');
-const { getTagList } = require('./service/tag');
+const {
+  getAllTag,
+  getTagList,
+  addTag,
+  editTag,
+  deleteTag,
+} = require('./service/tag');
+const { getUserInfo } = require('./service/user');
 const { login } = require('./service/login');
 
 app.use((req, res, next) => {
@@ -53,30 +60,55 @@ app.get('/blog/:id', async (req, res) => {
     const id = req.params.id;
     res.end(JSON.stringify(await getBlogDetail(id)));
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error :', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
 });
 
-app.get('/tags', async (req, res) => {
+app.get('/tag', async (req, res) => {
   try {
-    const tags = await getTagList();
+    const tags = await getAllTag();
     res.end(JSON.stringify(tags));
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
 });
 
-app.get('/comments/:id', async (req, res) => {
+app.get('/tag/pagination', async (req, res) => {
+  try {
+    const query = req.query;
+    const tags = await getTagList(query.page, query.size);
+    res.statusCode = 200;
+    res.end(JSON.stringify(tags));
+  } catch (error) {
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.get('/comment/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const comments = await getBlogComments(id);
     res.end(JSON.stringify(comments));
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.get('/user/info/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userInfo = await getUserInfo(id);
+    res.end(JSON.stringify(userInfo));
+  } catch (error) {
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
@@ -98,18 +130,19 @@ app.post('/login', (req, res) => {
       res.end(JSON.stringify(userInfo));
     });
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
 });
 
-app.delete('/blog/:id', (req, res) => {
+app.delete('/blog/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    res.end(JSON.stringify(deleteBlog(id)));
+    await deleteBlog(id);
+    res.end(JSON.stringify('DELETE SUCCESS'));
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
@@ -128,7 +161,7 @@ app.put('/blog', (req, res) => {
       res.end(JSON.stringify('EDIT SUCCESS'));
     });
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
@@ -147,7 +180,66 @@ app.post('/blog', (req, res) => {
       res.end(JSON.stringify('ADD SUCCESS'));
     });
   } catch (error) {
-    console.error('Error in /login:', error);
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.delete('/tag/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    await deleteTag(id);
+    res.end(JSON.stringify('DELETE SUCCESS'));
+  } catch (error) {
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.put('/tag', (req, res) => {
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      const data = JSON.parse(body);
+      const code = await editTag(data);
+      if (code === -2) {
+        res.end(JSON.stringify({ code, msg: 'name exist' }));
+        return;
+      }
+      res.statusCode = 200;
+      res.end(JSON.stringify({ code, msg: 'EDIT SUCCESS' }));
+    });
+  } catch (error) {
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.post('/tag', (req, res) => {
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      const data = JSON.parse(body);
+      const code = await addTag(data);
+      console.log('code: ', code);
+      res.statusCode = 200;
+      if (code === -2) {
+        res.end(JSON.stringify({ code, msg: 'name exist' }));
+        return;
+      }
+      res.end(JSON.stringify({ code, msg: 'ADD SUCCESS' }));
+    });
+  } catch (error) {
+    console.error('Error', error);
     res.statusCode = 500;
     res.end('Internal Server Error');
   }
