@@ -44,14 +44,12 @@ const getTagList = async (page = 1, size = 5) => {
 
 const isExist = async (name) => {
   const res = await executeQuery(tag_name(name));
-  console.log('res: ', res);
   if (!res.length) return false;
   return true;
 };
 
 const addTag = async (tag) => {
   const exist = await isExist(tag.name);
-  console.log('exist: ', exist);
   if (exist) return -2; //已存在
 
   await executeQuery(insert_tag(tag));
