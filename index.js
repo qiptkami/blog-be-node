@@ -11,6 +11,7 @@ const {
   editBlog,
   deleteBlog,
   addBlog,
+  insertComments,
 } = require('./service/blog');
 const {
   getAllTag,
@@ -95,6 +96,25 @@ app.get('/comment/:id', async (req, res) => {
     const id = req.params.id;
     const comments = await getBlogComments(id);
     res.end(JSON.stringify(comments));
+  } catch (error) {
+    console.error('Error', error);
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+});
+
+app.post('/comment', async (req, res) => {
+  try {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      const data = JSON.parse(body);
+      await insertComments(data);
+      res.statusCode = 200;
+      res.end(JSON.stringify('ADD SUCCESS'));
+    });
   } catch (error) {
     console.error('Error', error);
     res.statusCode = 500;

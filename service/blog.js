@@ -5,6 +5,7 @@ const {
   blog_tag,
   blog_detail,
   blog_comments,
+  insert_comments,
   update_blog,
   insert_blog_tag,
   delete_blog,
@@ -88,6 +89,11 @@ const getBlogComments = async (blogId) => {
   };
 };
 
+const insertComments = async (comment) => {
+  await executeQuery(insert_comments(comment));
+  return 1;
+};
+
 const editBlog = async (blog) => {
   await executeQuery(update_blog(blog));
   //处理tag 一对多  两种方式 1. 删除原先的 直接新增 2. 新增的和原先的比较一下
@@ -132,6 +138,7 @@ module.exports = {
   getBlogList,
   getBlogDetail,
   getBlogComments,
+  insertComments,
   editBlog,
   deleteBlog,
   addBlog,
