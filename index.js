@@ -250,7 +250,6 @@ app.post('/tag', (req, res) => {
     req.on('end', async () => {
       const data = JSON.parse(body);
       const code = await addTag(data);
-      console.log('code: ', code);
       res.statusCode = 200;
       if (code === -2) {
         res.end(JSON.stringify({ code, msg: 'name exist' }));
