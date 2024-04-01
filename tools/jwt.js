@@ -10,12 +10,14 @@ const generateToken = (userId) => {
 
 // 验证 Token
 const verifyToken = (token) => {
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    return decoded;
-  } catch (error) {
-    throw new Error('Invalid token');
-  }
+  return new Promise((resolve) => {
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        resolve(401);
+      }
+      resolve(200);
+    });
+  });
 };
 
 module.exports = { generateToken, verifyToken };

@@ -9,7 +9,7 @@ const blog_list = (limit, offset, title, tagId) => {
     query += ` AND tb.tag_id = ${tagId}`;
   }
 
-  query += ` GROUP BY b.id LIMIT ${limit} OFFSET ${offset}`;
+  query += ` GROUP BY b.id ORDER BY UNIX_TIMESTAMP(b.update_time) DESC LIMIT ${limit} OFFSET ${offset}`;
   return query;
 };
 

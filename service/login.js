@@ -1,6 +1,6 @@
 const { executeQuery } = require('../mapper/mysql');
 const { login_admin } = require('../mapper/sql/login');
-const { generateToken } = require('../tools/jwt');
+const { generateToken, verifyToken } = require('../tools/jwt');
 
 const login = async (username, password) => {
   const user = await executeQuery(login_admin(username));
@@ -33,4 +33,12 @@ const login = async (username, password) => {
   }
 };
 
-module.exports = { login };
+const verifyLoginInfo = async (token) => {
+  return new Promise((resolve, reject) => {
+    verifyToken(token).then((code) => {
+      resolve(code === 200);
+    });
+  });
+};
+
+module.exports = { login, verifyLoginInfo };

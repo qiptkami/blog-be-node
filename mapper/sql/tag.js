@@ -3,7 +3,7 @@ const tag_list = () => `SELECT t.id, t.name FROM t_tag t`;
 const tag_blogs = (
   tid
 ) => `SELECT m.blog_id, b.title, b.first_picture, b.update_time, b.create_time, b.description
-FROM t_tag_blog m, t_blog b WHERE m.tag_id = ${tid} AND b.id = m.blog_id`;
+FROM t_tag_blog m, t_blog b WHERE m.tag_id = ${tid} AND b.id = m.blog_id ORDER BY UNIX_TIMESTAMP(b.update_time) DESC`;
 
 const tag_page = (limit, offset) =>
   `SELECT t.id, t.name, COUNT(tb.blog_id) AS bCount 
